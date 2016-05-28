@@ -1,0 +1,242 @@
+<div class="bg-light lter b-b wrapper-md">
+    <h1 class="m-n font-thin h3">文章管理</h1>
+</div>
+<div class="wrapper-md text-center" ng-controller="ProjectsEditCtrl">
+    <div class="panel panel-default">
+        <div class="panel-heading font-bold">
+            文章信息
+            <div class="pull-right" style="font-size:24px;margin-right: 30px;" onclick="history.back()"><span class="icon-action-undo" title="返回"></span></div>
+            <div class="pull-right" style="font-size:24px;" ng-show="isView" ng-click="isView=!isView"><span class="glyphicon glyphicon-edit" title="编辑">&nbsp;</span></div>
+        </div>
+        <div class="panel-body">
+            <div class="form-horizontal" id="projectForm">
+                <fieldset ng-disabled="isView">
+                    <div class="form-group">
+                        <!-- Text input-->
+                        <label class="col-sm-2 control-label" for="input01">标题</label>
+                        <div class="col-sm-8">
+                            <input type="text" placeholder="标题" ng-model="form.title" name="title" class="form-control rounded">
+                            <p class="help-block"></p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <!-- Search input-->
+                        <label class="col-sm-2 control-label">描述标题</label>
+                        <div class="col-sm-8">
+                            <input type="text" placeholder="描述标题" ng-model="form.descript" name="descript" class="form-control rounded search-query">
+                            <p class="help-block"></p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <!-- Select Basic -->
+                        <label class="col-sm-2 control-label">文章分类</label>
+                        <div class="col-sm-8">
+                            <select class="form-control rounded" ng-model="form.type_id" ng-options="it.id as it.value for it in articleTypeList">
+                                <option value="">请选择</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">图片列表</label>
+                        <!-- File Upload -->
+                        <div class="col-sm-8">
+                            <button ng-click="ckUpload()" class="btn btn-primary form-control btn-lg">上传</button>
+                            <input type="file" class="btn btn-primary hide" id="myUpload" nv-file-select="" uploader="uploader" multiple />
+                            <div class="progress bg-light dker">
+                                <div class="progress-bar progress-bar-striped bg-info" role="progressbar" ng-style="{ 'width': uploader.progress + '%' }"></div>
+                            </div>
+                            <div class="wrapper-md hide">
+                                <table class="table bg-white-only b-a">
+                                    <tbody>
+                                        <tr ng-repeat="item in uploader.queue">
+                                            <td><strong>{{ item.file.name }}</strong></td>
+                                            <td ng-show="uploader.isHTML5" nowrap>{{ item.file.size/1024/1024|number:2 }} MB</td>
+                                            <td ng-show="uploader.isHTML5">
+                                                <div class="progress progress-sm m-b-none m-t-xs">
+                                                    <div class="progress-bar bg-info" role="progressbar" ng-style="{ 'width': uploader.progress + '%' }"></div>
+                                                </div>
+                                            </td>
+                                            <td class="text-center">
+                                                <span ng-show="item.isSuccess" class="text-success"><i class="glyphicon glyphicon-ok"></i></span>
+                                                <span ng-show="item.isCancel" class="text-warning"><i class="glyphicon glyphicon-ban-circle"></i></span>
+                                                <span ng-show="item.isError" class="text-danger"><i class="glyphicon glyphicon-remove"></i></span>
+                                            </td>
+                                            <td nowrap>
+                                                <button type="button" class="btn btn-default btn-xs" ng-click="item.upload()" ng-disabled="item.isReady || item.isUploading || item.isSuccess">
+                                                    Upload
+                                                </button>
+                                                <button type="button" class="btn btn-default btn-xs" ng-click="item.cancel()" ng-disabled="!item.isUploading">
+                                                    Cancel
+                                                </button>
+                                                <button type="button" class="btn btn-default btn-xs" ng-click="item.remove()">
+                                                    Remove
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <!-- Textarea -->
+                        <label class="col-sm-2 control-label">内容</label>
+                        <div class="col-sm-5">
+                            <!-- <div lazy-load="textAngular">
+    <div text-angular ng-model="form.content" id="Mytext" class="btn-groups"></div>
+</div>
+ -->
+                            <div>
+                                <script id="container" name="content" type="text/plain" style="width:450px;height:100%;min-height:400px;">
+                                </script>
+                            </div>
+                        </div>
+                        <div class="col-sm-5">
+                            <ul style="list-style: none; ">
+                                <li style="clear: both;">
+                                    <div>
+                                        <div style="float: left; ">设为主图</div>
+                                        <div style="float: left; margin-left:30px;">文章所有图片</div>
+                                        <input type="text" style="width:0px;height: 0px;" name="main_image_path" ng-model="form.main_image_path" />
+                                    </div>
+                                </li>
+                                <li style="clear: both;" ng-repeat="img in imgList">
+                                    <div>
+                                        <input style="float:left;margin:25px 41px 25px 25px ;" ng-click="setMainPath(img.small_path)" type="radio" /> <img ng-src="{{img.small_path}}" style="width:100px; height:60px;margin:10px 0; float:left;cursor: pointer;" ng-click="addImg(img.small_path)" alt="点击加文章" />
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"></label>
+                        <!-- Multiple Checkboxes -->
+                        <div class="col-sm-8">
+                            <!-- Inline Checkboxes -->
+                            <label class="checkbox inline pull-left">
+                                <input type="checkbox" value="是否为公司简介" ng-click="ckChangeCheck($event)" ng-true-value="1" ng-false-value="0" ng-model="form.is_company_intro"> 是否为公司简介
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <!-- Select Basic -->
+                        <label class="col-sm-2 control-label">阅读数</label>
+                        <div class="col-sm-8">
+                            <input type="text" name="view_count" placeholder="阅读数" ng-model="form.view_count" class="form-control rounded">
+                        </div>
+                    </div>
+                    <div class="form-group" ng-show="!showMore">
+                        <!-- Select Basic -->
+                        <label class="col-sm-2 control-label"></label>
+                        <div class="col-sm-8">
+                            <label class="col-sm-2 control-label" ng-click="changeShowMore()" style="color:green">点击显示更多选项</label>
+                        </div>
+                    </div>
+                    <div class="form-group" ng-show="showMore">
+                        <div class="form-group">
+                            <!-- Select Basic -->
+                            <label class="col-sm-3 control-label">
+                                <input type="checkbox" name="is_product" ng-true-value="1" ng-false-value="0" value="是否为产品介绍" ng-model="form.is_product">是否为产品</label>
+                            <div class="col-sm-7  ">
+                            </div>
+                        </div>
+                        <div class="form-group hide">
+                            <!-- Select Basic -->
+                            <label class="col-sm-2 control-label">工程名称</label>
+                            <div class="col-sm-8">
+                                <input type="text" name="project_name" placeholder="工程名称" ng-model="form.project_name" class="form-control rounded">
+                            </div>
+                        </div>
+                        <div class="form-group hide">
+                            <!-- Select Basic -->
+                            <label class="col-sm-2 control-label">工程联系电话</label>
+                            <div class="col-sm-8">
+                                <input type="text" name="project_contact_phone" placeholder="联系电话" ng-model="form.project_contact_phone" class="form-control rounded">
+                            </div>
+                        </div>
+                        <div class="form-group" ng-show="form.is_product==0">
+                            <!-- Select Basic -->
+                            <label class="col-sm-2 control-label">工程地址</label>
+                            <div class="col-sm-8">
+                                <input type="text" name="project_address" placeholder="工程地址" ng-model="form.project_address" class="form-control rounded">
+                            </div>
+                        </div>
+                        <div class="form-group" ng-show="form.is_product==0">
+                            <!-- Select Basic -->
+                            <label class="col-sm-2 control-label">施工单位</label>
+                            <div class="col-sm-8">
+                                <input type="text" name="project_action_company" placeholder="施工单位" ng-model="form.project_action_company" class="form-control rounded">
+                            </div>
+                        </div>
+                        <div class="form-group" ng-show="form.is_product==0">
+                            <!-- Select Basic -->
+                            <label class="col-sm-2 control-label">设计单位</label>
+                            <div class="col-sm-8">
+                                <input type="text" name="project_design_company" placeholder="设计单位" ng-model="form.project_design_company" class="form-control rounded">
+                            </div>
+                        </div>
+                        <div class="form-group" ng-show="form.is_product==0">
+                            <!-- Select Basic -->
+                            <label class="col-sm-2 control-label">工程面积</label>
+                            <div class="col-sm-8">
+                                <input type="text" name="project_area" placeholder="工程面积（平方米）" ng-model="form.project_area" class="form-control rounded">
+                            </div>
+                        </div>
+                        <div class="form-group" ng-show="form.is_product==0">
+                            <!-- Select Basic -->
+                            <label class="col-sm-2 control-label">工程类型</label>
+                            <div class="col-sm-8">
+                                <!-- <input type="text" name="project_type" placeholder="工程类型" ng-model="form.project_type" class="form-control rounded">
+ -->
+                                <select name='project_type' ng-model="form.project_type" class="form-control rounded" ng-options="it as it for it in project_type_list"></select>
+                            </div>
+                        </div>
+                        <div class="form-group" ng-show="form.is_product==1">
+                            <!-- Select Basic -->
+                            <label class="col-sm-2 control-label">产品材质</label>
+                            <div class="col-sm-8">
+                                <input type="text" name="product_metal" placeholder="产品材质" ng-model="form.product_metal" class="form-control rounded">
+                            </div>
+                        </div>
+                        <div class="form-group" ng-show="form.is_product==1">
+                            <!-- Select Basic -->
+                            <label class="col-sm-2 control-label">产品规格</label>
+                            <div class="col-sm-8">
+                                <input type="text" name="product_ruler" placeholder="产品规格" ng-model="form.product_ruler" class="form-control rounded">
+                            </div>
+                        </div>
+                        <div class="form-group" ng-show="form.is_product==1">
+                            <!-- Select Basic -->
+                            <label class="col-sm-2 control-label">适用场景</label>
+                            <div class="col-sm-8">
+                                <input type="text" name="product_cence" placeholder="适用场景" ng-model="form.product_cence" class="form-control rounded">
+                            </div>
+                        </div>
+                        <div class="form-group" ng-show="form.is_product==1">
+                            <!-- Select Basic -->
+                            <label class="col-sm-2 control-label">价格</label>
+                            <div class="col-sm-8">
+                                <input type="text" name="product_price" placeholder="价格" ng-model="form.product_price" class="form-control rounded">
+                            </div>
+                        </div>
+                        <div class="form-group" ng-show="form.is_product==1">
+                            <!-- Select Basic -->
+                            <label class="col-sm-2 control-label">产地</label>
+                            <div class="col-sm-8">
+                                <input type="text" name="product_address" placeholder="产地" ng-model="form.product_address" class="form-control rounded">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <button type="button" ng-click="ckSave()" class="btn btn-success">保存</button>
+                        <button type="button" ng-show="showPublishBtn" ng-click="ckPublish(1)" class="btn btn-success">马上发布</button>
+                        <button type="button" ng-show="showNoPublishBtn" ng-click="ckPublish(0)" class="btn btn-success">撤消发布</button>
+                        <a class="btn btn-default" onclick="history.back()">返回</a>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+    </div>
+</div>

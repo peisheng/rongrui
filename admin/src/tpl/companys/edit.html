@@ -1,0 +1,217 @@
+<div class="bg-light lter b-b wrapper-md">
+    <h1 class="m-n font-thin h3">企业管理</h1>
+</div>
+<div class="wrapper-md text-center" ng-controller="CompanysEditCtrl">
+    <div class="panel panel-default">
+        <div class="panel-heading font-bold">
+            企业信息
+            <div class="pull-right" style="font-size:24px;margin-right: 30px;" onclick="history.back()"><span class="icon-action-undo" title="返回"></span></div>
+            <div class="pull-right" style="font-size:24px;" ng-show="isView" ng-click="isView=!isView"><span class="glyphicon glyphicon-edit" title="编辑">&nbsp;</span></div>
+        </div>
+        <div class="panel-body">
+            <div class="form-horizontal" id="companyForm">
+                <fieldset ng-disabled="isView">
+                    <div class="form-group">
+                        <!-- Text input-->
+                        <label class="col-sm-2 control-label" for="input01">名称</label>
+                        <div class="col-sm-8">
+                            <input type="text" name="name" ng-model="form.name" placeholder="名称" class="form-control rounded">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <!-- Select Basic -->
+                        <label class="col-sm-2 control-label col-sm-2 ">所属类型</label>
+                        <div class="col-sm-8">
+                            <select class="form-control rounded" name="type" ng-model="form.type_id" ng-options="it.id as it.value for it in companyTypeList">
+                                <option>请选择</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <!-- Select Basic -->
+                        <label class="col-sm-2 control-label">省份</label>
+                        <div class="col-sm-8">
+                            <select class="form-control rounded" name="province" ng-options="it for it in provinceList" ng-model="form.province">
+                                <option>请选择</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <!-- Select Basic -->
+                        <label class="col-sm-2 control-label">城市</label>
+                        <div class="col-sm-8">
+                            <select class="form-control rounded" name="city" ng-model="form.city_id" required ng-options="it.id as it.city for it in cityList|filter:{province:form.province}">
+                                <option>请选择</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <!-- Search input-->
+                        <label class="col-sm-2 control-label">公司地址</label>
+                        <div class="col-sm-8">
+                            <input type="text" name="address" placeholder="公司地址" ng-model="form.address" class="form-control rounded search-query">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <!-- Search input-->
+                        <label class="col-sm-2 control-label">公司电话</label>
+                        <div class="col-sm-8">
+                            <input type="text" name="company_phone" placeholder="公司电话" ng-model="form.company_phone" class="form-control rounded search-query">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">LOGO</label>
+                        <!-- File Upload -->
+                        <div class="col-sm-8">
+                            <button ng-click="ckUpload()" class="btn btn-primary form-control btn-lg">上传</button>
+                            <input type="file" class="btn btn-primary hide" id="myUpload" nv-file-select="" uploader="uploader" />
+                            <div class="progress bg-light dker">
+                                <div class="progress-bar progress-bar-striped bg-info" role="progressbar" ng-style="{ 'width': uploader.progress + '%' }"></div>
+                            </div>
+                            <div class="wrapper-md hide">
+                                <table class="table bg-white-only b-a">
+                                    <tbody>
+                                        <tr ng-repeat="item in uploader.queue">
+                                            <td><strong>{{ item.file.name }}</strong></td>
+                                            <td ng-show="uploader.isHTML5" nowrap>{{ item.file.size/1024/1024|number:2 }} MB</td>
+                                            <td ng-show="uploader.isHTML5">
+                                                <div class="progress progress-sm m-b-none m-t-xs">
+                                                    <div class="progress-bar bg-info" role="progressbar" ng-style="{ 'width': uploader.progress + '%' }"></div>
+                                                </div>
+                                            </td>
+                                            <td class="text-center">
+                                                <span ng-show="item.isSuccess" class="text-success"><i class="glyphicon glyphicon-ok"></i></span>
+                                                <span ng-show="item.isCancel" class="text-warning"><i class="glyphicon glyphicon-ban-circle"></i></span>
+                                                <span ng-show="item.isError" class="text-danger"><i class="glyphicon glyphicon-remove"></i></span>
+                                            </td>
+                                            <td nowrap>
+                                                <button type="button" class="btn btn-default btn-xs" ng-click="item.upload()" ng-disabled="item.isReady || item.isUploading || item.isSuccess">
+                                                    Upload
+                                                </button>
+                                                <button type="button" class="btn btn-default btn-xs" ng-click="item.cancel()" ng-disabled="!item.isUploading">
+                                                    Cancel
+                                                </button>
+                                                <button type="button" class="btn btn-default btn-xs" ng-click="item.remove()">
+                                                    Remove
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div>
+                            <img ng-src="{{form.logo_path}}" style="width:400px;" ng-init="form.logo_path='http://dummyimage.com/400x200/4d494d/686a82.gif&text=placeholder+image'" alt="Logo Image">
+                            <input type="text" id="logo_path" name="logo_path" style="width:0px;height: 0px; overflow: hidden" ng-model="form.logo_path">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <!-- Text input-->
+                        <label class="col-sm-2 control-label" for="input01">网址</label>
+                        <div class="col-sm-8">
+                            <input type="text" name="site_url" placeholder="网址 http://" ng-model="form.site_url" class="form-control rounded">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <button type="button" ng-click="ckSave()" class="btn btn-success">保存</button>
+                        <a class="btn btn-default" onclick="history.back()">返回</a>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-title">
+            <ul class="nav nav-tabs nav-pills nav-justified">
+                <li class="{{articeActive}}">
+                    <a ng-click="tabArticle()">文章信息</a>
+                </li>
+                <li class="{{userActive}}">
+                    <a href ng-click="tabUser()">用户信息</a>
+                </li>
+            </ul>
+        </div>
+        <div class="panel-body">
+            <div class="text-center" ng-show="isShowArticle">
+                <div class="input-group" style="width: 500px;">
+                    <input type="text" ng-model="keyword" class="form-control" placeholder="搜索文章名称" aria-describedby="basic-addon2">
+                    <span class="input-group-addon" id="basic-addon2" ng-click="ckProjectSearch()">搜索</span>
+                    <button type="button" class="btn btn-primary pull-right" ng-click="ckProjectAdd()">新建文章</button>
+                </div>
+                <table class="table table-striped">
+                    <thead>
+                        <tr align="center">
+                            <td style="width:50px;">ID</td>
+                            <td>标题</td>
+                            <td style="width:90px;">描述标题</td>
+                            <td style="width:80px;">发布时间</td>
+                            <td style="width:80px;">阅读量</td>
+                            <td style="width:80px;">是否为公司简介</td>
+                            <td style="width:250px;">操作</td>
+                        </tr>
+                    </thead>
+                    <tbody align="center">
+                        <tr ng-repeat="item in projectItems">
+                            <td>{{item.id}}</td>
+                            <td>{{item.title}}</td>
+                            <td>{{item.descript}}</td>
+                            <td>{{item.publish_time}}</td>
+                            <td>{{item.view_count}}</td>
+                            <td>{{item.is_company_intro}}</td>
+                            <td>
+                                <button type="button" class="btn btn-primary" ng-click="ckProjectView(item.id)">查看
+                                </button>
+                                <button type="button" class="btn btn-primary" ng-click="ckProjectEdit(item.id)">编辑</button>
+                                <button type="button" class="btn btn-danger" ng-click="ckProjectDelete(item.id)">删除</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="text-center" ng-show="isShowUser">
+                <div class="input-group" style="width: 500px;">
+                    <input type="text" ng-model="user_keyword" class="form-control" placeholder="搜索用户名称" aria-describedby="basic-addon2">
+                    <span class="input-group-addon" id="basic-addon2" ng-click="ckUserSearch()">搜索</span>
+                    <button type="button" class="btn btn-primary pull-right" ng-click="ckUserAdd()">新建用户</button>
+                </div>
+                <table class="table table-striped">
+                    <thead>
+                        <tr align="center">
+                            <td style="width:50px;">ID</td>
+                            <td>用户名称</td>
+                            <td style="width:90px;">真实姓名</td>
+                            <td style="width:80px;">QQ号码</td>
+                            <td style="width:90px;">电话</td>
+                            <td style="width:80px;">手机</td>
+                            <td style="width:90px;">Email</td>
+                            <td style="width:250px;">操作</td>
+                        </tr>
+                    </thead>
+                    <tbody align="center">
+                        <tr ng-repeat="item in userItems">
+                            <td>{{item.id}}</td>
+                            <td>{{item.user_name}}</td>
+                            <td>{{item.real_name}}</td>
+                            <td>{{item.qq_number}}</td>
+                            <td>{{item.phone}}</td>
+                            <td>{{item.mobile}}</td>
+                            <td>{{item.email}}</td>
+                            <td>
+                                <button type="button" class="btn btn-primary" ng-click="ckUserView(item.id)">查看</button>
+                                <button type="button" class="btn btn-primary" ng-click="ckUserEdit(item.id)">编辑</button>
+                                <button type="button" class="btn btn-danger" ng-click="ckUserDelete(item.id)">删除</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="text-center">
+                <tm-pagination conf="paginationConf"></tm-pagination>
+            </div>
+        </div>
+    </div>
+</div>
